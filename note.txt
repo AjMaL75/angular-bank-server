@@ -1,0 +1,18 @@
+server creation
+----------------
+
+1-npm init
+2-install express      npm install express or npm i express
+
+steps
+-----
+1-import express
+2-create  app using express
+3-setting port to run the app(3000)
+
+in server convert recieved data json to js
+   use app.use(express.json())
+
+in server convert   to send data js to json
+       res.json(value) 
+
