@@ -4,11 +4,17 @@ const express=require("express")
 //import backendservice file
 const bs=require('./service/backendService')
 
+//import cors
+const cors=require("cors")
+
 //app creation
 
 const app=express()
 //to convert all the data json to js automatically
 app.use(express.json())
+
+//integrate fontend with app
+app.use(cors({origin:"http://localhost:4200"}))
 
 const jwt=require("jsonwebtoken")
 
@@ -24,9 +30,9 @@ const jwt=require("jsonwebtoken")
 const jwtMiddleWare=(req,res,next)=>{
   try{
     //access data from request
-  const token=req.headers['access_data']
+  const token1=req.headers['access_data']
   //verify the token with sedret key
-  const data=jwt.verify(token,"superkey123")
+  const data=jwt.verify(token1,"tokenkey123")
   next()
 }
 catch{
@@ -42,41 +48,48 @@ catch{
 }
 
 app.post("/register",(req,res)=>{
-  const result= bs.register(req.body.accno,req.body.uname,req.body.pass)
-  if(result)
-  {
-    res.status(result.statusCode).json(result)
-    // console.log(bs.userDetails);
-  }
-  else{
-    res.status(result.statusCode).json(result)
-  }
+   bs.register(req.body.accno,req.body.uname,req.body.pass).then(result=>{
+    if(result)
+    {
+      res.status(result.statusCode).json(result)
+      // console.log(bs.userDetails);
+    }
+    else{
+      res.status(result.statusCode).json(result)
+    }
+   })
+ 
 })
 app.post("/login",(req,res)=>{
-  const result= bs.login(req.body.accno,req.body.pass)
-  if(result)
-  {
-    res.status(result.statusCode).json(result)
-    // console.log(bs.userDetails);
-  }
-  else{
-    res.status(result.statusCode).json(result)
-  }
+   bs.login(req.body.accno,req.body.pass).then(result=>
+    {
+      if(result)
+      {
+        res.status(result.statusCode).json(result)
+        // console.log(bs.userDetails);
+      }
+      else{
+        res.status(result.statusCode).json(result)
+      }
+    })
+ 
 })
 app.post("/deposit",jwtMiddleWare,(req,res)=>{
-  const result= bs.deposit(req.body.accno,req.body.pass,req.body.amount)
-  if(result)
-  {
-    res.status(result.statusCode).json(result)
-    // console.log(bs.userDetails);
-  }
-  else{
-    res.status(result.statusCode).json(result)
-  }
+  bs.deposit(req.body.accno,req.body.passw,req.body.amount).then(result=>{
+    if(result)
+    {
+      res.status(result.statusCode).json(result)
+      // console.log(bs.userDetails);
+    }
+    else{
+      res.status(result.statusCode).json(result)
+    }
+  })
+ 
 })
 app.post("/withdrawl",jwtMiddleWare,(req,res)=>{
-  const result= bs.withdrawl(req.body.accno,req.body.pass,req.body.amount)
-  if(result)
+   bs.withdrawl(req.body.accno,req.body.pass,req.body.amount).then(result=>{
+    if(result)
   {
     res.status(result.statusCode).json(result)
     // console.log(bs.userDetails);
@@ -84,16 +97,33 @@ app.post("/withdrawl",jwtMiddleWare,(req,res)=>{
   else{
     res.status(result.statusCode).json(result)
   }
+   })
+  
 })
-app.get("/transaction",jwtMiddleWare,(req,res)=>{
-  const result= bs.getTransaction(req.body.accno)
-  if(result){
-    res.status(result.statusCode).json(result)
-    // console.log(bs.userDetails);
-  }
-  else{
-    res.status(result.statusCode).json(result)
-  }
+app.post("/transaction",jwtMiddleWare,(req,res)=>{
+   bs.getTransaction(req.body.accno).then(result=>{
+    if(result){
+      res.status(result.statusCode).json(result)
+      // console.log(bs.userDetails);
+    }
+    else{
+      res.status(result.statusCode).json(result)
+    }
+   })
+  
+})
+app.delete("/delete/:accno",jwtMiddleWare,(req,res)=>{
+  bs.deleteAcc(req.params.accno).then(result=>{
+    if(result)
+    {
+      res.status(result.statusCode).json(result)
+    }
+    else
+    {
+      res.status(result.statusCode).json(result)
+
+    }
+  })
 })
 
 //resolve api
